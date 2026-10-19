@@ -1,5 +1,7 @@
 {
   "modmenu.nameTranslation.chat_gags": "Chat Gags",
   "modmenu.descriptionTranslation.chat_gags": "Client-side mod to let your friends restrict your speech",
-  "modmenu.summaryTranslation.chat_gags": "Filter your speech :3"
+  "modmenu.summaryTranslation.chat_gags": "Filter your speech :3",
+
+  "chat_gags.modmenu_link.source": "Source"
 }

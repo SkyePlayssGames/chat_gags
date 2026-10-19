@@ -39,5 +39,19 @@
 		"java": ">=25",
 		"fabric-api": "*",
 		"fabric-language-kotlin": "*"
+	},
+	"custom": {
+		"modmenu":{
+			"badges": [
+				"clientSideOnly"
+			],
+			"links": {
+				"modmenu.discord": "https://discord.gg/JKf45qeTen",
+				"modmenu.modrinth": "https://modrinth.com/mod/chat-gags",
+				"modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/chat-gags",
+				"modmenu.wiki": "https://modded.wiki/w/Chat_Gags",
+				"chat_gags.modmenu_link.source": "https://github.com/SkyePlayssGames/chat_gags"
+			}
+		}
 	}
 }
