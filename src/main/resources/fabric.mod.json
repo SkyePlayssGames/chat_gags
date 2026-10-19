@@ -1,0 +1,43 @@
+{
+	"schemaVersion": 1,
+	"id": "chat_gags",
+	"version": "${version}",
+	"name": "Chat Gags",
+	"description": "Filter your speech :3",
+	"authors": [
+		"AutisticPlush"
+	],
+	"contact": {
+	},
+	"license": "ARR",
+	"icon": "assets/chat_gags/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			{
+				"value": "net.galaxyy.chatgags.client.ChatGagsClient",
+				"adapter": "kotlin"
+			}
+		],
+		"modmenu": [
+			{
+				"value": "net.galaxyy.chatgags.client.modmenu.ModMenuEntrypoint",
+				"adapter": "kotlin"
+			}
+		]
+	},
+	"mixins": [
+		"chat_gags.mixins.json",
+		{
+			"config": "chat_gags.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*",
+		"fabric-language-kotlin": "*"
+	}
+}
