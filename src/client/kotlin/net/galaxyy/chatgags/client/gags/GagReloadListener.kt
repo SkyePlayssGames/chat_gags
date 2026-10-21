@@ -32,12 +32,12 @@ class GagReloadListener : SimpleSynchronousResourceReloadListener {
             val gagJson = (Json.Default.decodeFromString(resource.open().readAllBytes().decodeToString()) as JsonObject)
             val name: String? = (gagJson["name"] as JsonPrimitive?)?.content
             val wordsJson: JsonArray? = (gagJson["words"] as JsonArray?)
-            if (name == null || wordsJson == null) {
-                ChatGags.LOGGER.error("Error reloading custom Chat Gags")
+            val type: String? = (gagJson["type"] as JsonPrimitive?)?.content
+            if (name == null || wordsJson == null || type == null) {
+                ChatGags.LOGGER.error("Error reloading custom Chat Gags: Missing content field")
                 return
             }
-            val words: List<String> = wordsJson.mapNotNull { element -> (element as? JsonPrimitive)?.content }
-            resourcePackGags.add(Gag(name, words))
+            Gags.tryUpdateResourcePackGag(name, wordsJson, type)
         }
     }
 }
