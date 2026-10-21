@@ -4,7 +4,7 @@ import net.minecraft.util.RandomSource
 import java.util.Locale
 import java.util.Locale.getDefault
 
-open class Gag(val name: String, val covers: List<String>) {
+open class Gag(private val name: String, val covers: List<String>) {
     var PUNCTUATION: List<Char>
 
     init {
@@ -39,6 +39,11 @@ open class Gag(val name: String, val covers: List<String>) {
             }
         }
         return if (newMessage.length > 255) newMessage.substring(0, 256).trim() else newMessage.trim()
+    }
+
+    fun getName(hasNameSpace: Boolean): String {
+        return if (hasNameSpace) name
+        else name.substring(name.indexOf('+') + 1)
     }
 
     class RandomGag(name: String) : Gag(name, listOf()) {

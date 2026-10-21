@@ -18,13 +18,13 @@ object GagCommands {
         }
         val gag: Gag = context.getArgument("gag", Gag::class.java)
         (Minecraft.getInstance() as HasGags).`chat_gags$setGag`(gag)
-        context.source.sendFeedback(Component.literal("You set your gag to " + gag.name))
+        context.source.sendFeedback(Component.literal("You set your gag to " + gag.getName(false)))
         return 1
     }
 
     fun getGag(context: CommandContext<FabricClientCommandSource>): Int {
         val gag: Gag = (Minecraft.getInstance() as HasGags).`chat_gags$getGag`()
-        context.source.sendFeedback(Component.literal("You currently have this gag: " + gag.name))
+        context.source.sendFeedback(Component.literal("You currently have this gag: " + gag.getName(false)))
         return 1
     }
 }

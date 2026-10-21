@@ -35,7 +35,10 @@ object Gags {
         "create"
     )
 
-    fun tryUpdateResourcePackGag(name: String, words: List<JsonElement>, type: String) {
+    fun tryUpdateResourcePackGag(name: String, words: List<JsonElement>, type: String, namespace: String) {
+        if (name.none { char -> !(char.isLetterOrDigit() || char == '_' || char == '-') }) {
+            LOGGER.error("Name must be fully alphanumeric, extended with _ and -")
+        }
         val result = validateWords(words)
         if (result.second != "") {
             LOGGER.error(result.second + " for gag $name")
@@ -50,7 +53,7 @@ object Gags {
         }
 
         if (type == "create") {
-            resourcePackGags.add(Gag(name, result.first))
+            resourcePackGags.add(Gag("$namespace+$name", result.first))
         }
     }
 

@@ -44,7 +44,7 @@ class ReceiveChatMessageEvent : ClientReceiveMessageEvents.AllowChat {
         val gag: Gag = Gags.NameToGagMap[msg[msg.size-1].lowercase(getDefault())]!!
 
         (Minecraft.getInstance() as HasGags).`chat_gags$setGag`(gag)
-        Minecraft.getInstance().player?.sendOverlayMessage(Component.literal("Your gag was changed to " + gag.name))
+        Minecraft.getInstance().player?.sendOverlayMessage(Component.literal("Your gag was changed to " + gag.getName(false)))
 
         return false
     }

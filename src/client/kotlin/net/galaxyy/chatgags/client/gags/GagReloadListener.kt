@@ -22,7 +22,7 @@ class GagReloadListener : SimpleSynchronousResourceReloadListener {
 
     override fun onResourceManagerReload(resourceManager: ResourceManager) {
         resourcePackGags.forEach { gag ->
-            NameToGagMap.remove(gag.name)
+            NameToGagMap.remove(gag.getName(true))
         }
         resourcePackGags.removeAll { _ -> true }
 
@@ -37,7 +37,7 @@ class GagReloadListener : SimpleSynchronousResourceReloadListener {
                 ChatGags.LOGGER.error("Error reloading custom Chat Gags: Missing content field")
                 return
             }
-            Gags.tryUpdateResourcePackGag(name, wordsJson, type)
+            Gags.tryUpdateResourcePackGag(name, wordsJson, type, identifier.namespace)
         }
     }
 }
