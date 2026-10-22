@@ -35,7 +35,8 @@ object Gags {
 
     val GAG_TYPES = listOf(
         "create",
-        "add"
+        "add",
+        "remove"
     )
 
     fun tryUpdateResourcePackGag(name: String, words: List<JsonElement>, type: String, namespace: String) {
@@ -48,7 +49,7 @@ object Gags {
             LOGGER.error(result.second + " for gag $name")
             return
         }
-        if (result.first == listOf<String>()) {
+        if (result.first == listOf<String>() && type != "remove") {
             LOGGER.error("No elements found in words for gag $name")
             return
         }
@@ -58,6 +59,10 @@ object Gags {
         }
 
         if (type == "create") {
+            if (namespace in listOf("minecraft", MOD_ID)) {
+                LOGGER.error("Cannot create a new gag in the $namespace namespace")
+                return
+            }
             resourcePackGags.add(Gag("$namespace+$name", result.first))
             return
         }
@@ -68,6 +73,14 @@ object Gags {
                 return
             }
             Gag(toModify.getName(true), toModify.covers + result.first)
+            return
+        }
+        if (type == "remove") {
+            val toModify: Gag? = NameToGagMap.remove((if (namespace == MOD_ID) name else "$namespace+$name").lowercase().replace(' ', '_'))
+            if (toModify == null) {
+                LOGGER.error("Non-existent or invalid gag \"$namespace+$name\" defined for remove. Make sure your resource packs are ordered correctly")
+                return
+            }
             return
         }
     }
