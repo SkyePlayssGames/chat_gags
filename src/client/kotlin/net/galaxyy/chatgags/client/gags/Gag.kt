@@ -46,17 +46,17 @@ open class Gag(private val name: String, val covers: List<String>) {
         else name.substring(name.indexOf('+') + 1)
     }
 
-    class RandomGag(name: String) : Gag(name, listOf()) {
+    class RandomGag(name: String) : EmptyGag(name) {
         override fun convertMessage(message: String, random: RandomSource): String {
             val gags: ArrayList<Gag> = ArrayList()
             Gags.NameToGagMap.values.forEach { gag ->
-                if (gag !is RandomGag && gag !is EmptyGag) gags.add(gag)
+                if (gag !is EmptyGag) gags.add(gag)
             }
             return gags[random.nextInt(gags.size)].convertMessage(message, random)
         }
     }
 
-    class EmptyGag(name: String) : Gag(name, listOf()) {
+    open class EmptyGag(name: String) : Gag(name, listOf()) {
         override fun convertMessage(message: String, random: RandomSource): String {
             return message
         }

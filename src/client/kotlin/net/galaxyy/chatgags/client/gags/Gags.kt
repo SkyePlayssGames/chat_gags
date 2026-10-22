@@ -11,15 +11,16 @@ import kotlinx.serialization.json.jsonNull
 import kotlinx.serialization.json.jsonPrimitive
 import net.galaxyy.chatgags.ChatGags
 import net.galaxyy.chatgags.ChatGags.LOGGER
+import net.galaxyy.chatgags.ChatGags.MOD_ID
 import net.galaxyy.chatgags.ChatGags.id
 import net.minecraft.client.Minecraft
 import java.util.logging.Logger
 
 object Gags {
     val NameToGagMap: HashMap<String, Gag> = HashMap()
-
     @JvmField
     val EMPTY: Gag = Gag.EmptyGag("None")
+
     val MUTE: Gag = Gag.EmptyGag("Mute")
     val RANDOM: Gag = Gag.RandomGag("Random")
     val CAT: Gag = Gag("Cat", listOf("hiss", "meow", "purr", "nyaa"))
@@ -29,15 +30,18 @@ object Gags {
     val MUFFLED: Gag = Gag("Muffled", listOf("mmmph", "mmph", "mmmmmphh"))
     val SQUEAK: Gag = Gag("Squeak", listOf("squeak!"))
 
+    val VanillaGags: List<Gag> = listOf(MUTE, RANDOM, CAT, DOG, FOX, BIRD, MUFFLED, SQUEAK)
     var resourcePackGags: ArrayList<Gag> = ArrayList()
 
     val GAG_TYPES = listOf(
-        "create"
+        "create",
+        "add"
     )
 
     fun tryUpdateResourcePackGag(name: String, words: List<JsonElement>, type: String, namespace: String) {
-        if (name.none { char -> !(char.isLetterOrDigit() || char == '_' || char == '-') }) {
-            LOGGER.error("Name must be fully alphanumeric, extended with _ and -")
+        if (name.none { char -> char in 'a'..'z' || char in 'A'..'Z' || char in '1'..'9' || char == '-' || char == '_' || char == ' ' }) {
+            LOGGER.error("Name must be fully alphanumeric, extended with _, -, and space, not \"$name\"")
+            return
         }
         val result = validateWords(words)
         if (result.second != "") {
@@ -50,10 +54,21 @@ object Gags {
         }
         if (type !in GAG_TYPES) {
             LOGGER.error("Invalid type declared for gag $name")
+            return
         }
 
         if (type == "create") {
             resourcePackGags.add(Gag("$namespace+$name", result.first))
+            return
+        }
+        if (type == "add") {
+            val toModify: Gag? = NameToGagMap[(if (namespace == MOD_ID) name else "$namespace+$name").lowercase().replace(' ', '_')]
+            if (toModify == null || toModify is Gag.EmptyGag) {
+                LOGGER.error("Non-existent or invalid gag \"$namespace+$name\" defined for add. Make sure your resource packs are ordered correctly")
+                return
+            }
+            Gag(toModify.getName(true), toModify.covers + result.first)
+            return
         }
     }
 
