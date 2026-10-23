@@ -1,5 +1,8 @@
 package net.galaxyy.chatgags.client.gags
 
+import com.mojang.serialization.Codec
+import com.mojang.serialization.codecs.RecordCodecBuilder
+import net.galaxyy.chatgags.client.gags.Gag.CustomGag
 import net.minecraft.util.RandomSource
 import java.util.Locale
 import java.util.Locale.getDefault
@@ -59,6 +62,16 @@ open class Gag(private val name: String, val covers: List<String>) {
     open class EmptyGag(name: String) : Gag(name, listOf()) {
         override fun convertMessage(message: String, random: RandomSource): String {
             return message
+        }
+    }
+
+    data class CustomGag(val name: String, val covers: List<String>, val type: String) {
+        companion object {
+            val CODEC: Codec<CustomGag> = RecordCodecBuilder.create { builder -> builder.group(
+                Codec.STRING.fieldOf("name").forGetter(CustomGag::name),
+                Codec.list(Codec.STRING).fieldOf("words").forGetter(CustomGag::covers),
+                Codec.STRING.fieldOf("type").forGetter(CustomGag::type)
+            ).apply(builder, ::CustomGag) }
         }
     }
 }

@@ -39,43 +39,43 @@ object Gags {
         "remove"
     )
 
-    fun tryUpdateResourcePackGag(name: String, words: List<JsonElement>, type: String, namespace: String) {
-        if (name.none { char -> char in 'a'..'z' || char in 'A'..'Z' || char in '1'..'9' || char == '-' || char == '_' || char == ' ' }) {
-            LOGGER.error("Name must be fully alphanumeric, extended with _, -, and space, not \"$name\"")
+    fun tryUpdateResourcePackGag(customGag: Gag.CustomGag, namespace: String) {
+        if (customGag.name.none { char -> char in 'a'..'z' || char in 'A'..'Z' || char in '1'..'9' || char == '-' || char == '_' || char == ' ' }) {
+            LOGGER.error("Name must be fully alphanumeric, extended with _, -, and space, not \"${customGag.name}\"")
             return
         }
-        val result = validateWords(words)
-        if (result.second != "") {
-            LOGGER.error(result.second + " for gag $name")
-            return
-        }
-        if (result.first == listOf<String>() && type != "remove") {
+        val name = customGag.name
+        if (customGag.covers == listOf<String>() && customGag.type != "remove") {
             LOGGER.error("No elements found in words for gag $name")
             return
         }
-        if (type !in GAG_TYPES) {
+        if (customGag.type !in GAG_TYPES) {
             LOGGER.error("Invalid type declared for gag $name")
             return
         }
 
-        if (type == "create") {
+        if (customGag.type == "create") {
             if (namespace in listOf("minecraft", MOD_ID)) {
                 LOGGER.error("Cannot create a new gag in the $namespace namespace")
                 return
             }
-            resourcePackGags.add(Gag("$namespace+$name", result.first))
+            if (NameToGagMap["$namespace+$name".lowercase().replace(' ', '_')] != null) {
+                LOGGER.error("Tried defining gag $namespace+$name twice")
+                return
+            }
+            resourcePackGags.add(Gag("$namespace+$name", customGag.covers))
             return
         }
-        if (type == "add") {
+        if (customGag.type == "add") {
             val toModify: Gag? = NameToGagMap[(if (namespace == MOD_ID) name else "$namespace+$name").lowercase().replace(' ', '_')]
             if (toModify == null || toModify is Gag.EmptyGag) {
                 LOGGER.error("Non-existent or invalid gag \"$namespace+$name\" defined for add. Make sure your resource packs are ordered correctly")
                 return
             }
-            Gag(toModify.getName(true), toModify.covers + result.first)
+            Gag(toModify.getName(true), toModify.covers + customGag.covers)
             return
         }
-        if (type == "remove") {
+        if (customGag.type == "remove") {
             val toModify: Gag? = NameToGagMap.remove((if (namespace == MOD_ID) name else "$namespace+$name").lowercase().replace(' ', '_'))
             if (toModify == null) {
                 LOGGER.error("Non-existent or invalid gag \"$namespace+$name\" defined for remove. Make sure your resource packs are ordered correctly")
@@ -83,21 +83,5 @@ object Gags {
             }
             return
         }
-    }
-
-    private fun validateWords(words: List<JsonElement>): Pair<List<String>, String> {
-        val result: ArrayList<String> = arrayListOf()
-        words.forEach { element ->
-            try {
-                element.jsonPrimitive
-            } catch (e: IllegalArgumentException) {
-                return Pair(listOf(), "One of the elements of words is not a String")
-            }
-            if (!element.jsonPrimitive.isString) {
-                return Pair(listOf(), "One of the elements of words is not a String")
-            }
-            result.add(element.jsonPrimitive.content)
-        }
-        return Pair(result, "")
     }
 }
