@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader
 import net.galaxyy.chatgags.ChatGags.id
 import net.galaxyy.chatgags.client.commands.GagArgumentType
 import net.galaxyy.chatgags.client.commands.GagCommands
@@ -28,8 +29,8 @@ object ChatGagsClient : ClientModInitializer {
 			GagArgumentType().javaClass,
 			SingletonArgumentInfo.contextFree(::GagArgumentType)
 		)
-		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(
-			GagReloadListener()
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
+			id("custom_gags"), GagReloadListener
 		)
 
 		ClientSendMessageEvents.ALLOW_CHAT.register(AllowChatMessageEvent())
