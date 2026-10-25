@@ -36,7 +36,9 @@ object Gags {
     val GAG_TYPES = listOf(
         "create",
         "add",
-        "remove"
+        "remove",
+        "delete",
+        "replace"
     )
 
     fun tryUpdateResourcePackGag(customGag: Gag.CustomGag, namespace: String) {
@@ -67,12 +69,18 @@ object Gags {
             return
         }
         if (customGag.type == "add") {
-            val toModify: Gag? = NameToGagMap[(if (namespace == MOD_ID) name else "$namespace+$name").lowercase().replace(' ', '_')]
-            if (toModify == null || toModify is Gag.EmptyGag) {
-                LOGGER.error("Non-existent or invalid gag \"$namespace+$name\" defined for add. Make sure your resource packs are ordered correctly")
-                return
-            }
+            val toModify = getGagToModify(namespace, name, "add") ?: return
             Gag(toModify.getName(true), toModify.covers + customGag.covers)
+            return
+        }
+        if (customGag.type == "delete") {
+            val toModify = getGagToModify(namespace, name, "delete") ?: return
+            Gag(toModify.getName(true), toModify.covers - customGag.covers.toSet())
+            return
+        }
+        if (customGag.type == "replace") {
+            val toModify = getGagToModify(namespace, name, "replace") ?: return
+            Gag(toModify.getName(true), customGag.covers)
             return
         }
         if (customGag.type == "remove") {
@@ -83,5 +91,14 @@ object Gags {
             }
             return
         }
+    }
+
+    private fun getGagToModify(namespace: String, name: String, type: String): Gag? {
+        val toModify: Gag? = NameToGagMap[(if (namespace == MOD_ID) name else "$namespace+$name").lowercase().replace(' ', '_')]
+        if (toModify == null || toModify is Gag.EmptyGag) {
+            LOGGER.error("Non-existent or invalid gag \"$namespace+$name\" defined for $type. Make sure your resource packs are ordered correctly")
+            return null
+        }
+        return toModify
     }
 }
