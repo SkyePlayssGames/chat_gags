@@ -73,8 +73,8 @@ object Gags {
             Gag(toModify.getName(true), toModify.covers + customGag.covers)
             return
         }
-        if (customGag.type == "delete") {
-            val toModify = getGagToModify(namespace, name, "delete") ?: return
+        if (customGag.type == "remove") {
+            val toModify = getGagToModify(namespace, name, "remove") ?: return
             Gag(toModify.getName(true), toModify.covers - customGag.covers.toSet())
             return
         }
@@ -83,10 +83,10 @@ object Gags {
             Gag(toModify.getName(true), customGag.covers)
             return
         }
-        if (customGag.type == "remove") {
+        if (customGag.type == "delete") {
             val toModify: Gag? = NameToGagMap.remove((if (namespace == MOD_ID) name else "$namespace+$name").lowercase().replace(' ', '_'))
             if (toModify == null) {
-                LOGGER.error("Non-existent or invalid gag \"$namespace+$name\" defined for remove. Make sure your resource packs are ordered correctly")
+                LOGGER.error("Non-existent or invalid gag \"$namespace+$name\" defined for delete. Make sure your resource packs are ordered correctly")
                 return
             }
             return
